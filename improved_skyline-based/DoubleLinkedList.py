@@ -1,5 +1,6 @@
 from gap import Gap
 
+
 class DoubleLinkedList:
     def __init__(self, w):
         self.head = Gap(0, float("inf"), 0)
@@ -29,7 +30,8 @@ class DoubleLinkedList:
 
     """插入节点"""
 
-    def insert(self, node_pre, new_node):
+    @staticmethod
+    def insert(node_pre, new_node):
         new_node.prior = node_pre
         new_node.next = node_pre.next
         node_pre.next.prior = new_node
@@ -37,7 +39,8 @@ class DoubleLinkedList:
 
     """删除节点"""
 
-    def delete(self, *nodes):
+    @staticmethod
+    def delete(*nodes):
         for node in nodes:
             node.prior.next = node.next
             node.next.prior = node.prior

@@ -42,7 +42,7 @@ class ImprovedSkylineBased:
         self.mid = None
 
     # R
-    def init_R(self):
+    def init_r(self):
         new_item = []
         for (w, h) in self.items:
             new_item.append([h, w])
@@ -55,7 +55,6 @@ class ImprovedSkylineBased:
         """
             将原R复制到r1中，并赋值一个key值，输出一个包含以下信息及特征的数据结构：
             包含key、i、w、h信息
-            :param R: 原矩形列表 [[w, h], []]
             :return: 原矩形列表和包含k值的字典
             """
 
@@ -74,7 +73,6 @@ class ImprovedSkylineBased:
            将R复制到r2中，输出一个包含以下信息及特征的数据结构
            1、按照w和i进行升序排列
            2、包含w，i，h信息
-           :param R:原矩形列表
            :return:r2
            """
 
@@ -94,7 +92,6 @@ class ImprovedSkylineBased:
             将R复制到r3中，输出一个包含以下信息及特征的数据结构
             1、按照h和w进行升序排列
             2、包含w，i，h信息
-            :param R:原矩形列表
             :return:r3
             """
 
@@ -117,7 +114,7 @@ class ImprovedSkylineBased:
     # 初始化items的辅助序列
     def init_items(self):
 
-        self.R = self.init_R()
+        self.R = self.init_r()
         self.init_r1()
         self.init_r2()
         self.init_r3()
@@ -157,7 +154,7 @@ class ImprovedSkylineBased:
         a = h * (self.width + 1) + w
         return a
 
-    # 确定item_palced_i,以及长宽
+    # 确定item_placed_i,以及长宽
     def output_item(self):
 
         w, h = self.R[self.items_placed_i][0], self.R[self.items_placed_i][1]
@@ -166,10 +163,12 @@ class ImprovedSkylineBased:
         return self.items_placed[-1]
 
     # 二分搜索找一个特定的值
-    def binary_search_value(self, list_item, item, i):
+    @staticmethod
+    def binary_search_value(list_item, item, i):
 
         """
         找一个特定的值
+        :param i:
         :param list_item:
         :param item:
         :return: 位置序列以及序列对应的值
@@ -202,6 +201,7 @@ class ImprovedSkylineBased:
 
         """
         在一个升序排列的列表中，找一个有一个特定值的最大范围
+        :param w:
         :param list_item:
         :param h:
         :return: 一个范围的序列，以及对应的值
@@ -240,10 +240,13 @@ class ImprovedSkylineBased:
         # return None
 
     # 二分搜索法找一个无特定值的范围
-    def binary_search_range(self, list_item, width, dict_item, i):
+    @staticmethod
+    def binary_search_range(list_item, width, dict_item, i):
 
         """
         在一个升序排列的列表中，找一个不大于某个特定值的最大范围
+        :param i:
+        :param dict_item:
         :param list_item:
         :param width:
         :return: 一个范围的序列，以及对应的值
@@ -334,19 +337,19 @@ class ImprovedSkylineBased:
             return item
         else:
             if max(self.prior_s_gap.y, self.next_s_gap.y) != float("inf"):
-                range = self.binary_search_range_value(self.r3, max(self.prior_s_gap.y, self.next_s_gap.y),
-                                                       self.s_gap.w)
-                if range is not None:
-                    a, b = range[0], range[1]
+                range_ = self.binary_search_range_value(self.r3, max(self.prior_s_gap.y, self.next_s_gap.y),
+                                                        self.s_gap.w)
+                if range_ is not None:
+                    a, b = range_[0], range_[1]
                     self.items_placed_i, self.mid = self.tree3.query(a, b)
                     item = self.output_item()
                     self.fitness = 1
                     return item
                 elif min(self.prior_s_gap.y, self.next_s_gap.y) != float("inf"):
-                    range = self.binary_search_range_value(self.r3, min(self.prior_s_gap.y, self.next_s_gap.y),
-                                                           self.s_gap.w)
-                    if range is not None:
-                        a, b = range[0], range[1]
+                    range_ = self.binary_search_range_value(self.r3, min(self.prior_s_gap.y, self.next_s_gap.y),
+                                                            self.s_gap.w)
+                    if range_ is not None:
+                        a, b = range_[0], range_[1]
                         self.items_placed_i, self.mid = self.tree3.query(a, b)
                         item = self.output_item()
                         self.fitness = 1
@@ -424,7 +427,6 @@ class ImprovedSkylineBased:
             self.fitness = 2
         self.update_gaps(dummy_item)
 
-
     def pack_item(self, item):
         x, y = 0, 0
         w, h = item[0], item[1]
@@ -489,8 +491,8 @@ class ImprovedSkylineBased:
         self.tree2.set(index2, math.inf)
         self.tree3.set(index3, math.inf)
 
-        other_index2, other_index3 = self.find_tree_other_index(self.r2_i_dict), \
-                                     self.find_tree_other_index(self.r3_i_dict)
+        other_index2, other_index3 = \
+            self.find_tree_other_index(self.r2_i_dict), self.find_tree_other_index(self.r3_i_dict)
         self.tree2.set(other_index2, math.inf)
         self.tree3.set(other_index3, math.inf)
 
@@ -513,7 +515,6 @@ class ImprovedSkylineBased:
         for (w, h, x, y) in self.items_placed:
             plt.plot([x, x + w, x + w, x, x], [y, y, y + h, y + h, y])  # 由五个点的信息描绘出每个矩形
         plt.show()
-
 
     def update_gaps(self, item):
         w, h = item[0], item[1]
