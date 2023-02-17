@@ -74,7 +74,7 @@ class ImprovedSkylineBased:
            1、按照w和i进行升序排列
            2、包含w，i，h信息
            :return:r2
-           """
+        """
 
         for i, (w, h) in enumerate(self.R):
             self.r2.append([w, i, h])  # [[w, i, h]]
@@ -526,13 +526,16 @@ class ImprovedSkylineBased:
             self.heap.remove(self.next_s_gap)
 
             self.double_linked.insert(self.prior_s_gap.prior, new_gap)  # 双向链中更新新的gap
-            self.double_linked.delete(self.s_gap, self.next_s_gap)
+            self.double_linked.delete(self.prior_s_gap, self.s_gap, self.next_s_gap)
 
         if self.fitness == 2:
             if h == self.prior_s_gap.y:
                 new_gap = Gap(self.prior_s_gap.x, self.prior_s_gap.y, self.prior_s_gap.w + self.s_gap.w)  # 更新new gap
                 heapq.heappush(self.heap, new_gap)  # 双向链中压入新的gap
-                self.heap.remove(self.prior_s_gap)
+                try:
+                    self.heap.remove(self.prior_s_gap)
+                except ValueError:
+                    self.heap.remove(self.prior_s_gap)
 
                 self.double_linked.insert(self.prior_s_gap.prior, new_gap)  # 双向链中更新新的gap
                 self.double_linked.delete(self.s_gap, self.prior_s_gap)
@@ -541,7 +544,11 @@ class ImprovedSkylineBased:
                 new_gap = Gap(self.s_gap.x, self.next_s_gap.y, self.next_s_gap.w + self.s_gap.w)
 
                 heapq.heappush(self.heap, new_gap)  # 双向链中压入新的gap
-                self.heap.remove(self.next_s_gap)
+
+                try:
+                    self.heap.remove(self.next_s_gap)
+                except ValueError:
+                    self.heap.remove(self.next_s_gap)
 
                 self.double_linked.insert(self.prior_s_gap, new_gap)  # 双向链中更新新的gap
                 self.double_linked.delete(self.s_gap, self.next_s_gap)
@@ -620,7 +627,7 @@ class ImprovedSkylineBased:
             self.s_gap = self.find_lowest_gap()  # 找最合适的gap
 
             item = self.find_best_fit_item()  # 找最合适的矩形
-            print(f"{item=}")
+            # print(f"{item=}")
             if item is None:  # 表示没有找到可以放置的矩形
                 self.raise_gap()
             else:
@@ -629,6 +636,9 @@ class ImprovedSkylineBased:
                 self.update_items(item)
 
                 self.update_gaps(item)
-        print(self.items_placed)
+        return max(self.items_placed, key=lambda x: x[3] + x[1])
+
+    def result(self):
 
         self.result_showing()
+        return self.items_placed

@@ -11,3 +11,6 @@ class Gap:
 
     def __le__(self, other):
         return self.y <= other.y
+
+    def __repr__(self):
+        return "{}-{}-{}".format(self.x, self.y, self.w)
